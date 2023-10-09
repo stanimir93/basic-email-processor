@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Emails Processor</title>
+</head>
+<body style="width: fit-content; margin: 0 auto; padding: 20px">
+<nav style="display: flex; align-items: center; justify-content: space-between">
+    <label for="delimiter">Separator
+        <select name="delimiter" id="delimiter">
+            <option value="newLine">New Line</option>
+            <option value="comma">Comma</option>
+            <option value="semicolon">Semicolon</option>
+        </select>
+    </label>
+    <div>
+        <button style="margin-left: 5px" class="clear">Clear</button>
+        <button style="margin-left: 5px" class="copy">Copy</button>
+        <button style="margin-left: 5px" class="process">Process Emails</button>
+    </div>
+</nav>
+<p id="invalid-emails"
+   style="color: red"></p>
+<section
+        style="display: flex; align-items: start; gap: 5px; margin-top: 20px;">
+    <div style="display: flex; flex-direction: column; gap: 7px;">
+        <label for="emails">Emails</label>
+    <textarea name="emails" id="emails" cols="40" rows="40" placeholder="Paste emails here"></textarea>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 5px;">
+    <label for="result">Result</label>
+    <textarea name="result" id="result" cols="40" rows="40" placeholder="Result"></textarea>
+    </div>
+</section>
+</body>
+<script>
+    const splitChars = {
+        newLine: '\n',
+        comma: ', ',
+        semicolon: '; '
+    }
+
+
+    function processEmails(str, splitChar) {
+        const emails = str.split(/[,;\n]/)
+            .filter(email => email.trim().length > 0) // remove empty strings
+            .map(email => email.toLowerCase()); // convert to lowercase
+
+
+        // validate emails
+        const validEmails = [];
+        const invalidEmails = [];
+        for (const email of emails) {
+            if (email.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)) {
+                validEmails.push(email);
+            } else {
+                invalidEmails.push(email);
+            }
+        }
+
+        if (invalidEmails.length > 0) {
+            document.getElementById('invalid-emails').textContent = `Invalid emails: ${invalidEmails.join(', ')}`;
+        } else {
+            document.getElementById('invalid-emails').textContent = '';
+        }
+
+
+        const char = splitChars[splitChar];
+
+
+        const stringOfEmails = [...new Set(validEmails)].join(char); // remove duplicates
+
+        document.getElementById('result').value = stringOfEmails;
+    }
+
+    //     add listener
+    document.querySelector('.process').addEventListener('click', function () {
+        const delimiter = document.querySelector('select').value;
+        const emails = document.getElementById('emails').value;
+        processEmails(emails, delimiter);
+    });
+    document.querySelector('.copy').addEventListener('click', function () {
+        const value = document.getElementById('result').value;
+        navigator.clipboard.writeText(value);
+    });
+    document.querySelector('.clear').addEventListener('click', function () {
+        document.getElementById('emails').value = '';
+        document.getElementById('result').value = '';
+    });
+</script>
+</html>
