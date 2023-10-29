@@ -45,7 +45,7 @@
         const emails = str.split(/[,;\n]/)
             .filter(email => email.trim().length > 0) // remove empty strings
             .map(email => email.replace(/\u200B/g, '')) // remove zero width space
-            .map(email => email.toLowerCase()); // convert to lowercase
+            .map(email => email.toLowerCase().trim()); // convert to lowercase
 
 
         // validate emails
